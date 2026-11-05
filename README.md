@@ -1,77 +1,35 @@
-# Custom Database Template for the MiSTer Downloader
+# BBCMicro.Alternate update database
 
-By following these instructions, you'll create your own [Custom Database for the MiSTer Downloader](https://github.com/MiSTer-devel/Downloader_MiSTer/blob/main/docs/custom-databases.md). This database can be integrated in MiSTer FPGA by just adding your own drop-in database file at the root of the SD.
+This repository is the [MiSTer Downloader](https://github.com/MiSTer-devel/Downloader_MiSTer) database for
+**[BBCMicro.Alternate](https://github.com/Welsh71/BBCMicro.Alternate_MiSTer)**, an enhanced BBC Micro
+Model B / Master 128 core for MiSTer. Add it once, and `update` / `update_all` keep the core up to date.
 
-Once your database is up, adding files to it is very simple. You'll only have to upload files to your repository on GitHub, and after that, your users will fetch these files directly in their devices, by just running *update* or *update_all*.
+It installs:
 
-## How to generate your own Custom Database for the MiSTer Downloader:
-1. Make sure you are logged in into your GitHub account. Or register a new account if you don't have any yet.
-2. Then click on
-    <a style="margin-top:100px;" href="https://github.com/theypsilon/DB-Template_MiSTer/generate">
-        <img src="https://img.shields.io/badge/Use_this_template-2ea44f" 
-            alt="Use this template"
-            title="Create repository from this template"></a>
-button to create your own public Custom Database repository on GitHub.
-3. After less than 5 minutes, you're database file will be generated at `https://raw.githubusercontent.com/<YOUR GITHUB USER>/<YOUR GITHUB REPOSITORY>/db/db.json.zip` (replacing the <> fields accordingly) and will be ready to be used. For example, if your GitHub user is `jose` and your repository name is `game_wallpapers`, the url will be: `https://raw.githubusercontent.com/jose/game_wallpapers/db/db.json.zip`
-4. To integrate it in a MiSTer device, download the following file: `https://raw.githubusercontent.com/<YOUR GITHUB USER>/<YOUR GITHUB REPOSITORY>/db/downloader_<YOUR GITHUB USER>_<YOUR GITHUB REPOSITORY>.zip`.
-Then extract the `.ini` file from it and place it in the root of the SD card.
-5. After that, run *update* or *update_all* as usual. It will try to fetch the files from your newly created database. If your database is still empty -which is your case if you followed these instructions-, obviously it won't download any file yet, but it will show up in the logs. For adding files to the database check the next section.
+- `_Computer/BBCMicro.Alternate._YYYYMMDD.rbf`: the latest release of the core
+- `games/BBCMicro.Alternate/sounds.rom`: the disc drive sound samples (optional feature, off by default)
 
-## How to add files to your already working Custom Database:
+It sits alongside the official BBC Micro core (`BBCMicro_YYYYMMDD.rbf`) without replacing it or its settings.
 
-Once you have your database up and running (check previous section to figure out how to set it up), adding files is very straightforward.
+## Adding it to your MiSTer
 
-Just upload any file to your repository by using GitHub UI (Add File > Upload files), or via git. Once the files show up in your repository, they'll also be added to your database automatically. Alternatively, to include files without uploading them to the repository, add their external locations and corresponding paths to [external_files.csv](external_files.csv).
+**Easy way:** download
+[downloader_Welsh71_BBCMicro.Alternate_DB.zip](https://raw.githubusercontent.com/Welsh71/BBCMicro.Alternate_DB/db/downloader_Welsh71_BBCMicro.Alternate_DB.zip),
+extract the `.ini` file from it and copy it to the root of the SD card, next to `downloader.ini`.
 
-After adding the files, you may see the *Actions* tab in your repository to see how the automation did its magic if you are curious.
-
-A couple of things to consider when uploading files:
-
-- When a user fetches the files via *update* or *update_all*, the downloaded file structure will mirror 1:1 the file structure you have in your repository at GitHub. This means, if you have a folder `_Cores/` containing some files in your repository, an identical `_Cores` folder will show up in MiSTer containing the exact same files.
-
-- The files `README.md`, `LICENSE`, and the `.github` folder won't be included in your database. Just ignore them, they won't be installed in the devices. The file `external_files.csv` won't show up on your device either, but the files listed inside it will.
-
-- You may upload as many files as you want as long as they don't violate GitHub constraints (100mb is max size per file).
-
-- You should avoid full path clashes between your files and the files from other databases so that your users don't run into issues when using multiple databases at the same time.
-
-## How your users will integrate your Custom Database in their MiSTers:
-
-Your users can integrate your database in two ways.
-
-### Drop-in database
-
-The easiest option is for users to drag and drop a file onto their SD card.
-
-For example, if your GitHub username is `jose` and your repository is `game_wallpapers`, users can download:
-
-`https://raw.githubusercontent.com/jose/game_wallpapers/db/downloader_jose_game_wallpapers.zip`
-
-Then they only need to:
-
-1. Extract `downloader_jose_game_wallpapers.ini` from the ZIP.
-2. Copy it to the **root of the MiSTer SD card**, next to `downloader.ini`.
-
-That's it. The database is ready to use.
-
-
-### Manual INI editing (for Advanced Users)
-
-If they prefer to do it manually instead, they may add the following lines to the bottom of `downloader.ini`:
+**Or by hand:** add these lines to the end of `downloader.ini` on the SD card:
 
 ```ini
-[jose/game_wallpapers]
-db_url = https://raw.githubusercontent.com/jose/game_wallpapers/db/db.json.zip
+[Welsh71/BBCMicro.Alternate_DB]
+db_url = https://raw.githubusercontent.com/Welsh71/BBCMicro.Alternate_DB/db/db.json.zip
 ```
 
-This needs to be done just once by your users. After that, whenever they run *downloader* or *update_all* they'll also be installing your updated files.
+Then run `update` or `update_all` as usual.
 
-## Modifying README.md
+## For the maintainer
 
-After you have your own repository based on this template, a good idea would be to edit your `README.md` describing the content of your database and how to use it. That way users will learn about your Database and will integrate it into their MiSTer's easily.
-
-Feel free to remove any reference to the original template there.
-
-## DB Inspector
-
-You may use this tool to inspect the resulting database easily: https://theypsilon.github.io/DB-Inspector_MiSTer
+Everything outside `README.md`, `LICENSE`, `.github/` and `external_files.csv` is mirrored 1:1 onto users'
+SD cards. At each release, replace the `.rbf` in `_Computer/` with the new
+`BBCMicro.Alternate._YYYYMMDD.rbf` (the same file as in the source repo's `releases/` folder) and push;
+the GitHub Action rebuilds `db.json.zip` on the `db` branch. Built from theypsilon's
+[DB-Template_MiSTer](https://github.com/theypsilon/DB-Template_MiSTer).
